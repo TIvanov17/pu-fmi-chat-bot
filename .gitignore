@@ -1,0 +1,32 @@
+# Ignore the virtual environment folder
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Ignore instance folder for Flask (if using it for configuration or logs)
+instance/
+
+# Ignore environment variable files
+.env
+*.env
+
+# Ignore database files (for SQLite, for example)
+*.db
+*.sqlite3
+
+# Ignore log files
+*.log
+
+# Ignore IDE directories (for VSCode, PyCharm, etc.)
+.vscode/
+.idea/
+
+# Ignore Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore system files (macOS, Windows)
+.DS_Store
+Thumbs.db
