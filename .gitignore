@@ -13,9 +13,6 @@ instance/
 .env
 *.env
 
-# Ignore database files (for SQLite, for example)
-*.db
-*.sqlite3
 
 # Ignore log files
 *.log

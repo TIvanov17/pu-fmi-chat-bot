@@ -1,5 +1,5 @@
 // Connect to the Flask-SocketIO server
-const socket = io.connect('http://127.0.0.1:5000');
+const socket = io.connect(window.location.origin);
 
 // Function to send user input to the server
 function sendMessage() {
@@ -22,10 +22,15 @@ function appendMessage(message, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.classList.add(sender);
     messageDiv.textContent = message;
+    messageDiv.innerHTML = message.replace(/\n/g, '<br>');
     chatBox.appendChild(messageDiv);
     chatBox.scrollTop = chatBox.scrollHeight;  // Scroll to bottom
 }
 
+function clearChat() {
+    const chatBox = document.getElementById('chat-box');
+    chatBox.innerHTML = '';
+}
 // Listen for the chatbot response
 socket.on('bot_reply', function(response) {
     appendMessage('Bot: ' + response, 'bot');
