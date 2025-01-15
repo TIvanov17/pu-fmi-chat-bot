@@ -1,5 +1,6 @@
 from flask_socketio import SocketIO, emit
 from flask import Blueprint
+from service.curriculum_service import is_curriculum_topic, handle_curriculum_topic
 from service.html_parser_service import get_latest_news
 
 socketio_bp = Blueprint('socketio_bp', __name__)
@@ -21,5 +22,8 @@ def handle_user_message(message):
             response = "No links found matching the criteria."
 
         emit('bot_reply', response)
+    elif is_curriculum_topic(message):
+        emit('bot_reply', handle_curriculum_topic(message))
+
     else:
         emit('bot_reply', "Send a message containing 'новини' to get news links.")
