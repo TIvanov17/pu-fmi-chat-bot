@@ -1,6 +1,10 @@
 // Connect to the Flask-SocketIO server
 const socket = io.connect(window.location.origin);
 
+socket.on('connected', function(data) {
+    appendMessage('Bot: ' + data.message, 'bot');
+});
+
 // Function to send user input to the server
 function sendMessage() {
     const userInput = document.getElementById('user-input').value;
