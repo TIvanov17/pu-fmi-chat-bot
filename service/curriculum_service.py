@@ -8,8 +8,8 @@ nlp = spacy.load("mk_core_news_sm")
 
 CURRICULUM_INTENTS = {
     "график": ["учебен график", "дай график"],
-    "план": ["график план", "искам план", "дай ми план", "учебни разписания"],
-    "сесии": ["график сесии", "сесията", "кога е сесията", "изпитни сесии"],
+    "план": ["график план", "искам план", "дай ми план", "учебни разписания", "план"],
+    "сесии": ["график сесии", "сесията", "кога е сесията", "изпитни сесии", 'сесии'],
     "изпити": ["график изпити", "дай изпити", "изпити", "държавни изпити"],
     "календар": ["график календар", "календар", "дай календара", "академичен календар"],
     "учебен отдел": ["инспектори", "приемно време"]
@@ -34,12 +34,31 @@ def handle_curriculum_topic(message):
     topic = detect_topic(message)
     if 'график' == topic:
         return get_schedule_content()
+    elif 'план' == topic:
+        return get_plans(message)
+    elif 'сесии' == topic:
+        return get_sessions()
+    elif 'изпити' == topic:
+        return get_exams()
     elif 'календар' == topic:
         return get_academic_calendar()
     elif 'учебен отдел' == topic:
         return get_academic_inspectors()
     else:
         return topic
+
+
+def get_sessions():
+    return create_link('https://fmi-plovdiv.org/index.jsp?id=70&ln=1', 'More info here')
+
+
+def get_exams():
+    content = get_content('https://fmi-plovdiv.org/index.jsp?id=71&ln=1')
+    response = '\n'
+
+    for link in content.find_all('a'):
+        response += create_link('https://fmi-plovdiv.org/' + link['href'], link.get_text()) + '\n'
+    return response
 
 
 def get_schedule_content():
@@ -69,6 +88,43 @@ def get_academic_inspectors():
     response += "\n\n"
     response += create_link(base_url + sectors[3]["href", 'инспектор магистър Нели Тодорова'])
     return response
+
+def get_plans(message):
+    if is_master(message): return 'Няма пък'
+
+    base_url = 'https://fmi-plovdiv.org/'
+    content_url = 'https://fmi-plovdiv.org/index.jsp?id=1382&ln=1'
+    content = get_content(content_url)
+
+    response = 'Последните учебните планове са:\n'
+
+    for link in content.find_all('a'):
+        response += '\n' + link.get_text() + ':\n'
+
+        link_content = get_content(base_url + link['href'])
+        tables = link_content.find_all('table', class_='edu_gratbl')
+
+        for index, table in enumerate(tables):
+            # skip the first tr since it is header
+            table_trs = table.find_all('tr')[1:]
+            response += '    Редовно\n' if index == 0 else 'Задочно\n'
+
+            for row in table_trs:
+                col = row.find_all('td')
+                response += col[0].find_all('p')[0].get_text()
+                response += ' - '
+                # get latest td with link (зимен or летен)
+                latest_td = col[1] if not col[2].find_all('a') else col[2]
+
+                links_to_attach = []
+                for a in latest_td.find_all('a'):
+                    links_to_attach.append(create_link(base_url + a['href'], a.get_text()))
+
+                response += ', '.join(links_to_attach)
+                response += '\n'
+    return response
+
+
 # Util methods
 
 
