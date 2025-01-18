@@ -11,7 +11,8 @@ CURRICULUM_INTENTS = {
     "план": ["график план", "искам план", "дай ми план", "учебни разписания", "план"],
     "сесии": ["график сесии", "сесията", "кога е сесията", "изпитни сесии", 'сесии'],
     "изпити": ["график изпити", "дай изпити", "изпити", "държавни изпити"],
-    "календар": ["график календар", "календар", "дай календара", "академичен календар"]
+    "календар": ["график календар", "календар", "дай календара", "академичен календар"],
+    "учебен отдел": ["инспектори", "приемно време"]
 }
 
 
@@ -41,6 +42,8 @@ def handle_curriculum_topic(message):
         return get_exams()
     elif 'календар' == topic:
         return get_academic_calendar()
+    elif 'учебен отдел' == topic:
+        return get_academic_inspectors()
     else:
         return topic
 
@@ -73,6 +76,18 @@ def get_academic_calendar():
     response += create_link(base_url + links[1]["href"], "За магистър")
     return response
 
+
+def get_academic_inspectors():
+    base_url = 'https://fmi-plovdiv.org/'
+    content = get_content("https://fmi-plovdiv.org/index.jsp?ln=1&id=2363")
+    sectors = content.find_all('tr')[:3]
+    response = 'Учебен отдел: \n\n'
+    response += create_link(base_url + sectors[1]["href", 'инспектор магистър Мариана Колева-Петрова'])
+    response += "\n\n"
+    response += create_link(base_url + sectors[2]["href", 'инспектор магистър Диана Минчева'])
+    response += "\n\n"
+    response += create_link(base_url + sectors[3]["href", 'инспектор магистър Нели Тодорова'])
+    return response
 
 def get_plans(message):
     if is_master(message): return 'Няма пък'
@@ -121,7 +136,7 @@ def get_common_links(head, links):
 
 
 def is_master(message):
-    return any(keyword in message for keyword in ['магистър', 'магистърски', 'магистарска'])
+    return any(keyword in message for keyword in ['магистър', 'магистърски', 'магистърска'])
 
 
 def get_content(url):

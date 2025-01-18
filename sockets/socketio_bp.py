@@ -1,7 +1,7 @@
 from flask_socketio import SocketIO, emit
 from flask import Blueprint, request
 from service.curriculum_service import is_curriculum_topic, handle_curriculum_topic
-from service.html_parser_service import get_latest_news, get_major_schedule_links
+from service.html_parser_service import get_latest_news, get_major_schedule_links, get_inspectors
 from database.db import get_last_conversation_message, insert_conversation
 from service.core_service import  get_link_of_schedule_by_faculty_number
 
@@ -43,6 +43,13 @@ def handle_user_message(message):
         links = get_major_schedule_links()
         if links:
             response = 'Факултет по математика и информатика - Учебни разписания\n\n'
+            for link in links:
+                response += f'* {link}\n\n'
+        emit('bot_reply', response)
+    elif 'учебен отдел' in message.lower():
+        links = get_inspectors()
+        if links:
+            response = 'Учебен отдел\n\n'
             for link in links:
                 response += f'* {link}\n\n'
         emit('bot_reply', response)
