@@ -55,6 +55,16 @@ def get_major_schedule():
              tag.get('href').startswith('index.jsp') and 'ln' in tag.get('href')]
     return links
 
+def get_inspectors():
+    response = requests.get(f'{base_url}index.jsp?ln=1&id=2363')
+    soup = BeautifulSoup(response.text, 'html.parser')
+    page_content = soup.find('div', class_='pageContent')
+    tr_tags = page_content.find_all('tr')
+    links = [{'text': tag.get_text(strip=True), 'td': tag.get('td')}
+             for tag in tr_tags if tag.get('td') and
+             tag.get('td').startswith('index.jsp') and 'ln' in tag.get('td')]
+    return links
+
 def get_major_schedule_links():
     return to_html_a_tag(get_major_schedule())
 
